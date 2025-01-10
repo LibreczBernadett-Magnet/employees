@@ -1,8 +1,6 @@
 package employees;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -10,14 +8,34 @@ import java.util.List;
 @RequestMapping("/api/employees")
 public class EmployeesController {
 
-    private EmployeesService employeesService;
+    private final EmployeesService employeesService;
 
     public EmployeesController(EmployeesService employeesService) {
         this.employeesService = employeesService;
     }
 
     @GetMapping
-    public List<EmployeeDto> listEmployees(){
-        return employeesService.listEmployees();
+    public List<EmployeeDto> listEmployees(QueryParameters queryParameters){
+        return employeesService.listEmployees(queryParameters);
+    }
+
+    @GetMapping("/{id}")
+    public EmployeeDto findEmployeeById(@PathVariable("id") long id){
+        return employeesService.findEmployeeById(id);
+    }
+
+    @PostMapping
+    public EmployeeDto createEmployee(@RequestBody CreateEmployeeCommand command){
+        return employeesService.createEmployee(command);
+    }
+
+    @PutMapping("/{id}")
+    public EmployeeDto updateEmployee(@PathVariable("id") long id, @RequestBody UpdateEmployeeCommand command){
+        return employeesService.updateEmployee(id, command);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteEmployee(@PathVariable("id") long id){
+        employeesService.deleteEmployee(id);
     }
 }
