@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
 
 @Service
 public class EmployeesService {
@@ -45,7 +46,7 @@ public class EmployeesService {
 //        return modelMapper.map(employees.stream()
         return employeeMapper.toDto(employees.stream()
                 .filter(e -> e.getId() == id).findAny()
-                .orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id)));
+                .orElseThrow(notFoundException(id)));
     }
 
     public EmployeeDto createEmployee(CreateEmployeeCommand command) {
@@ -58,7 +59,7 @@ public class EmployeesService {
     public EmployeeDto updateEmployee(long id, UpdateEmployeeCommand command) {
         Employee employee = employees.stream()
                 .filter(e -> e.getId() == id)
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id));
+                .findFirst().orElseThrow(notFoundException(id));
         employee.setName(command.getName());
 //        return modelMapper.map(employee, EmployeeDto.class);
         return employeeMapper.toDto(employee);
@@ -67,7 +68,11 @@ public class EmployeesService {
     public void deleteEmployee(long id) {
         Employee employee = employees.stream()
                 .filter(e -> e.getId() == id)
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id));
+                .findFirst().orElseThrow(notFoundException(id));
         employees.remove(employee);
+    }
+
+    private static Supplier<EmployeeNotFoundException> notFoundException(long id){
+        return () -> new EmployeeNotFoundException("Employee not found: %d".formatted(id));
     }
 }

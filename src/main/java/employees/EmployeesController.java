@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -24,22 +23,13 @@ public class EmployeesController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EmployeeDto> findEmployeeById(@PathVariable("id") long id){
-        try {
-            EmployeeDto employeeDto = employeesService.findEmployeeById(id);
-            return ResponseEntity
-                    .ok()
-                    .header("Response-Id", UUID.randomUUID().toString())
-                    .body(employeeDto);
-        }
-        catch (IllegalArgumentException e){
-            return ResponseEntity
-                    .notFound()
-                    .header("Response-Id", UUID.randomUUID().toString())
-                    .build();
-
-        }
+    public EmployeeDto findEmployeeById(@PathVariable("id") long id){
+        return employeesService.findEmployeeById(id);
     }
+
+    @ExceptionHandler(EmployeeNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void handleEmployeeNotFoundException(EmployeeNotFoundException e){}
 
     @PostMapping
     public ResponseEntity<EmployeeDto> createEmployee(@RequestBody CreateEmployeeCommand command,
