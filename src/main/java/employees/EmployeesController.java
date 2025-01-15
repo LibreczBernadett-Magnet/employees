@@ -1,9 +1,12 @@
 package employees;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -21,13 +24,30 @@ public class EmployeesController {
     }
 
     @GetMapping("/{id}")
-    public EmployeeDto findEmployeeById(@PathVariable("id") long id){
-        return employeesService.findEmployeeById(id);
+    public ResponseEntity<EmployeeDto> findEmployeeById(@PathVariable("id") long id){
+        try {
+            EmployeeDto employeeDto = employeesService.findEmployeeById(id);
+            return ResponseEntity
+                    .ok()
+                    .header("Response-Id", UUID.randomUUID().toString())
+                    .body(employeeDto);
+        }
+        catch (IllegalArgumentException e){
+            return ResponseEntity
+                    .notFound()
+                    .header("Response-Id", UUID.randomUUID().toString())
+                    .build();
+
+        }
     }
 
     @PostMapping
-    public EmployeeDto createEmployee(@RequestBody CreateEmployeeCommand command){
-        return employeesService.createEmployee(command);
+    public ResponseEntity<EmployeeDto> createEmployee(@RequestBody CreateEmployeeCommand command,
+                                      UriComponentsBuilder uri){
+        EmployeeDto employeeDto = employeesService.createEmployee(command);
+        return ResponseEntity
+                .created(uri.path("/api/employees/{id}").buildAndExpand(employeeDto.getId()).toUri())
+                .body(employeeDto);
     }
 
     @PutMapping("/{id}")
