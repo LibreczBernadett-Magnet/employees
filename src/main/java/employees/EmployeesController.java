@@ -27,10 +27,6 @@ public class EmployeesController {
         return employeesService.findEmployeeById(id);
     }
 
-    @ExceptionHandler(EmployeeNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void handleEmployeeNotFoundException(EmployeeNotFoundException e){}
-
     @PostMapping
     public ResponseEntity<EmployeeDto> createEmployee(@RequestBody CreateEmployeeCommand command,
                                       UriComponentsBuilder uri){
