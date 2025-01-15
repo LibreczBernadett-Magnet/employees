@@ -72,6 +72,11 @@ public class EmployeesService {
         employees.remove(employee);
     }
 
+    public void deleteAllEmployees() {
+        idGenerator.set(0);
+        employees.clear();
+    }
+
     private static Supplier<EmployeeNotFoundException> notFoundException(long id){
         return () -> new EmployeeNotFoundException("Employee not found: %d".formatted(id));
     }
