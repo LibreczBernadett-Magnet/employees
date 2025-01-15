@@ -1,10 +1,7 @@
 package employees;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,13 +10,19 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 public class EmployeesService {
 
-    private final ModelMapper modelMapper;
+ //   private final ModelMapper modelMapper;
+
+    private final EmployeeMapper employeeMapper;
+
+    public EmployeesService(EmployeeMapper employeeMapper) {
+        this.employeeMapper = employeeMapper;
+    }
 
     private final AtomicLong idGenerator = new AtomicLong();
 
-    public EmployeesService(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
-    }
+//    public EmployeesService(ModelMapper modelMapper) {
+//        this.modelMapper = modelMapper;
+//    }
 
     private final List<Employee> employees = Collections.synchronizedList(new ArrayList<>(List.of(
             new Employee(idGenerator.incrementAndGet(), "John Doe"),
@@ -28,26 +31,28 @@ public class EmployeesService {
     )));
 
     public List<EmployeeDto> listEmployees(QueryParameters queryParameters) {
-        Type targetListType = new TypeToken<List<EmployeeDto>>() {}.getType();
+//        Type targetListType = new TypeToken<List<EmployeeDto>>() {}.getType();
         List<Employee> filtered =
         employees.stream()
                 .filter(e -> queryParameters.getPrefix() == null || e.getName().toLowerCase().startsWith(queryParameters.getPrefix().toLowerCase()))
                 .filter(e -> queryParameters.getSuffix() == null || e.getName().toLowerCase().endsWith(queryParameters.getSuffix().toLowerCase()))
                 .toList();
-        return modelMapper.map(filtered, targetListType);
+//        return modelMapper.map(filtered, targetListType);
+        return employeeMapper.toDto(filtered);
     }
 
     public EmployeeDto findEmployeeById(long id) {
-        return modelMapper.map(employees.stream()
+//        return modelMapper.map(employees.stream()
+        return employeeMapper.toDto(employees.stream()
                 .filter(e -> e.getId() == id).findAny()
-                .orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id)),
-                EmployeeDto.class);
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id)));
     }
 
     public EmployeeDto createEmployee(CreateEmployeeCommand command) {
         Employee employee = new Employee(idGenerator.incrementAndGet(), command.getName());
         employees.add(employee);
-        return modelMapper.map(employee, EmployeeDto.class);
+//        return modelMapper.map(employee, EmployeeDto.class);
+        return employeeMapper.toDto(employee);
     }
 
     public EmployeeDto updateEmployee(long id, UpdateEmployeeCommand command) {
@@ -55,7 +60,8 @@ public class EmployeesService {
                 .filter(e -> e.getId() == id)
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id));
         employee.setName(command.getName());
-        return modelMapper.map(employee, EmployeeDto.class);
+//        return modelMapper.map(employee, EmployeeDto.class);
+        return employeeMapper.toDto(employee);
     }
 
     public void deleteEmployee(long id) {
