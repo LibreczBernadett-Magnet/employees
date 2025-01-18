@@ -27,7 +27,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "name": ""
+  "name": "Asd"
 }
 ###
 PUT http://localhost:8080/api/employees/1
