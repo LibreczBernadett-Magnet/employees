@@ -3,6 +3,7 @@ package employees;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +35,8 @@ public class EmployeesController {
 
     @PostMapping
     @Operation(summary = "creates an employee")
-    @ApiResponse(responseCode = "201", description = "employee has benn created")
-    public ResponseEntity<EmployeeDto> createEmployee(@RequestBody CreateEmployeeCommand command,
+    @ApiResponse(responseCode = "201", description = "employee has been created")
+    public ResponseEntity<EmployeeDto> createEmployee(@Valid @RequestBody CreateEmployeeCommand command,
                                       UriComponentsBuilder uri){
         EmployeeDto employeeDto = employeesService.createEmployee(command);
         return ResponseEntity
