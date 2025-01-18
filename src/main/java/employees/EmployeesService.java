@@ -1,5 +1,6 @@
 package employees;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 @Service
+@Slf4j
 public class EmployeesService {
 
  //   private final ModelMapper modelMapper;
@@ -20,10 +22,6 @@ public class EmployeesService {
     }
 
     private final AtomicLong idGenerator = new AtomicLong();
-
-//    public EmployeesService(ModelMapper modelMapper) {
-//        this.modelMapper = modelMapper;
-//    }
 
     private final List<Employee> employees = Collections.synchronizedList(new ArrayList<>(List.of(
             new Employee(idGenerator.incrementAndGet(), "John Doe"),
@@ -53,6 +51,8 @@ public class EmployeesService {
         Employee employee = new Employee(idGenerator.incrementAndGet(), command.getName());
         employees.add(employee);
 //        return modelMapper.map(employee, EmployeeDto.class);
+        log.info("Employee has been created");
+        log.debug("Employee has been created with name {}", employee.getName());
         return employeeMapper.toDto(employee);
     }
 
