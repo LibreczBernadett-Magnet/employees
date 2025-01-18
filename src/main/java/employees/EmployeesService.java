@@ -17,11 +17,14 @@ public class EmployeesService {
 
     private final EmployeeMapper employeeMapper;
 
-    public EmployeesService(EmployeeMapper employeeMapper) {
-        this.employeeMapper = employeeMapper;
-    }
-
     private final AtomicLong idGenerator = new AtomicLong();
+
+    private final EmployeesDao employeesDao;
+
+    public EmployeesService(EmployeeMapper employeeMapper, EmployeesDao employeesDao) {
+        this.employeeMapper = employeeMapper;
+        this.employeesDao = employeesDao;
+    }
 
     private final List<Employee> employees = Collections.synchronizedList(new ArrayList<>(List.of(
             new Employee(idGenerator.incrementAndGet(), "John Doe"),
@@ -30,14 +33,9 @@ public class EmployeesService {
     )));
 
     public List<EmployeeDto> listEmployees(QueryParameters queryParameters) {
-//        Type targetListType = new TypeToken<List<EmployeeDto>>() {}.getType();
-        List<Employee> filtered =
-        employees.stream()
-                .filter(e -> queryParameters.getPrefix() == null || e.getName().toLowerCase().startsWith(queryParameters.getPrefix().toLowerCase()))
-                .filter(e -> queryParameters.getSuffix() == null || e.getName().toLowerCase().endsWith(queryParameters.getSuffix().toLowerCase()))
+        return employeesDao.findAll().stream()
+                .map(employeeMapper::toDto)
                 .toList();
-//        return modelMapper.map(filtered, targetListType);
-        return employeeMapper.toDto(filtered);
     }
 
     public EmployeeDto findEmployeeById(long id) {
