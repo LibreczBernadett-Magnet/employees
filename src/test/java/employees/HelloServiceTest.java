@@ -8,7 +8,10 @@ class HelloServiceTest {
 
     @Test
     void sayHello() {
-        HelloService helloService = new HelloService();
+        HelloProperties helloProperties = new HelloProperties();
+        helloProperties.setMessage("Hello World");
+
+        HelloService helloService = new HelloService(helloProperties);
         String message = helloService.sayHello();
 
         assertThat(message).startsWith("Hello");
