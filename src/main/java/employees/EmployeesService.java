@@ -1,13 +1,11 @@
 package employees;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 @Service
@@ -20,38 +18,39 @@ public class EmployeesService {
     private final EmployeeMapper employeeMapper;
 
 
-    private final EmployeesDao employeesDao;
+    private final EmployeesRepository repository;
 
      public List<EmployeeDto> listEmployees(QueryParameters queryParameters) {
-        return employeesDao.findAll().stream()
+        return repository.findAll().stream()
                 .map(employeeMapper::toDto)
                 .toList();
     }
 
     public EmployeeDto findEmployeeById(long id) {
-         return employeeMapper.toDto(employeesDao.findById(id));
+         return employeeMapper.toDto(repository.findById(id).orElseThrow(notFoundException(id)));
     }
 
     public EmployeeDto createEmployee(CreateEmployeeCommand command) {
         Employee employee = new Employee(command.getName());
-        employee = employeesDao.createEmployee(employee);
+        employee = repository.save(employee);
         log.info("Employee has been created");
         log.debug("Employee has been created with name {}", employee.getName());
         return employeeMapper.toDto(employee);
     }
 
+    @Transactional
     public EmployeeDto updateEmployee(long id, UpdateEmployeeCommand command) {
-         Employee employee = new Employee(id, command.getName());
-         employeesDao.updateEmployee(employee);
+         Employee employee = repository.findById(id).orElseThrow(notFoundException(id));
+         employee.setName(command.getName());
          return employeeMapper.toDto(employee);
     }
 
     public void deleteEmployee(long id) {
-        employeesDao.deleteEmployee(id);
+        repository.deleteById(id);
     }
 
     public void deleteAllEmployees() {
-        employeesDao.deleteAllEmployees();
+        repository.deleteAll();
     }
 
     private static Supplier<EmployeeNotFoundException> notFoundException(long id){
