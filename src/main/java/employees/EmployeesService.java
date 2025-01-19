@@ -1,5 +1,6 @@
 package employees;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -11,68 +12,46 @@ import java.util.function.Supplier;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class EmployeesService {
 
  //   private final ModelMapper modelMapper;
 
     private final EmployeeMapper employeeMapper;
 
-    private final AtomicLong idGenerator = new AtomicLong();
 
     private final EmployeesDao employeesDao;
 
-    public EmployeesService(EmployeeMapper employeeMapper, EmployeesDao employeesDao) {
-        this.employeeMapper = employeeMapper;
-        this.employeesDao = employeesDao;
-    }
-
-    private final List<Employee> employees = Collections.synchronizedList(new ArrayList<>(List.of(
-            new Employee(idGenerator.incrementAndGet(), "John Doe"),
-            new Employee(idGenerator.incrementAndGet(), "Jack Doe"),
-            new Employee(idGenerator.incrementAndGet(), "Jack Smith")
-    )));
-
-    public List<EmployeeDto> listEmployees(QueryParameters queryParameters) {
+     public List<EmployeeDto> listEmployees(QueryParameters queryParameters) {
         return employeesDao.findAll().stream()
                 .map(employeeMapper::toDto)
                 .toList();
     }
 
     public EmployeeDto findEmployeeById(long id) {
-//        return modelMapper.map(employees.stream()
-        return employeeMapper.toDto(employees.stream()
-                .filter(e -> e.getId() == id).findAny()
-                .orElseThrow(notFoundException(id)));
+         return employeeMapper.toDto(employeesDao.findById(id));
     }
 
     public EmployeeDto createEmployee(CreateEmployeeCommand command) {
-        Employee employee = new Employee(idGenerator.incrementAndGet(), command.getName());
-        employees.add(employee);
-//        return modelMapper.map(employee, EmployeeDto.class);
+        Employee employee = new Employee(command.getName());
+        employee = employeesDao.createEmployee(employee);
         log.info("Employee has been created");
         log.debug("Employee has been created with name {}", employee.getName());
         return employeeMapper.toDto(employee);
     }
 
     public EmployeeDto updateEmployee(long id, UpdateEmployeeCommand command) {
-        Employee employee = employees.stream()
-                .filter(e -> e.getId() == id)
-                .findFirst().orElseThrow(notFoundException(id));
-        employee.setName(command.getName());
-//        return modelMapper.map(employee, EmployeeDto.class);
-        return employeeMapper.toDto(employee);
+         Employee employee = new Employee(id, command.getName());
+         employeesDao.updateEmployee(employee);
+         return employeeMapper.toDto(employee);
     }
 
     public void deleteEmployee(long id) {
-        Employee employee = employees.stream()
-                .filter(e -> e.getId() == id)
-                .findFirst().orElseThrow(notFoundException(id));
-        employees.remove(employee);
+        employeesDao.deleteEmployee(id);
     }
 
     public void deleteAllEmployees() {
-        idGenerator.set(0);
-        employees.clear();
+        employeesDao.deleteAllEmployees();
     }
 
     private static Supplier<EmployeeNotFoundException> notFoundException(long id){
