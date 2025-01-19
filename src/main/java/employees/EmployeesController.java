@@ -4,17 +4,20 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/employees")
 @Tag(name = "Operations on employees")
+@Slf4j
 public class EmployeesController {
 
     private final EmployeesService employeesService;
@@ -24,7 +27,8 @@ public class EmployeesController {
     }
 
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public List<EmployeeDto> listEmployees(QueryParameters queryParameters){
+    public List<EmployeeDto> listEmployees(QueryParameters queryParameters, Principal principal){
+        log.info("Logged user: " + principal.getName());
         return employeesService.listEmployees(queryParameters);
     }
 
