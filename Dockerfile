@@ -11,6 +11,8 @@ RUN java -Djarmode=tools -jar employees.jar extract  --layers --launcher
 
 FROM openjdk:17-jdk-slim
 WORKDIR application
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh .
+RUN chmod +x ./wait-for-it.sh
 COPY --from=builder application/employees/dependencies/ ./
 COPY --from=builder application/employees/spring-boot-loader/ ./
 COPY --from=builder application/employees/snapshot-dependencies/ ./
