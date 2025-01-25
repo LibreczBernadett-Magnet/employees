@@ -16,9 +16,8 @@ public class EmployeesService {
  //   private final ModelMapper modelMapper;
 
     private final EmployeeMapper employeeMapper;
-
-
     private final EmployeesRepository repository;
+    private final AddressesGateway addressesGateway;
 
      public List<EmployeeDto> listEmployees(QueryParameters queryParameters) {
         return repository.findAll().stream()
@@ -55,5 +54,10 @@ public class EmployeesService {
 
     private static Supplier<EmployeeNotFoundException> notFoundException(long id){
         return () -> new EmployeeNotFoundException("Employee not found: %d".formatted(id));
+    }
+
+    public AddressDto findAddressById(long id) {
+         Employee employee = repository.findById(id).orElseThrow(notFoundException(id));
+         return addressesGateway.findAddressByName(employee.getName());
     }
 }

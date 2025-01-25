@@ -28,13 +28,18 @@ public class EmployeesController {
 
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public List<EmployeeDto> listEmployees(QueryParameters queryParameters, Principal principal){
-        log.info("Logged user: " + principal.getName());
+        //log.info("Logged user: " + principal.getName());
         return employeesService.listEmployees(queryParameters);
     }
 
     @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public EmployeeDto findEmployeeById(@PathVariable("id") long id){
         return employeesService.findEmployeeById(id);
+    }
+
+    @GetMapping("/{id}/address")
+    public AddressDto findAddressById(@PathVariable("id") long id){
+        return employeesService.findAddressById(id);
     }
 
     @PostMapping
