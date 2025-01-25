@@ -47,6 +47,8 @@ public class EmployeesController {
     @ApiResponse(responseCode = "201", description = "employee has been created")
     public ResponseEntity<EmployeeDto> createEmployee(@Valid @RequestBody CreateEmployeeCommand command,
                                       UriComponentsBuilder uri){
+        log.info("Create employee");
+        log.debug("Create employee with name {}", command.getName());
         EmployeeDto employeeDto = employeesService.createEmployee(command);
         return ResponseEntity
                 .created(uri.path("/api/employees/{id}").buildAndExpand(employeeDto.getId()).toUri())

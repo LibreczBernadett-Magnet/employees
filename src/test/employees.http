@@ -66,3 +66,82 @@ POST http://localhost:8081/realms/EmployeesRealm/protocol/openid-connect/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=password&client_id=employees-app&username=johndoe&password=johndoe
+
+### actuator
+GET http://localhost:8080/actuator
+
+### heapdump
+GET http://localhost:8080/actuator/heapdump
+
+### threaddump
+GET http://localhost:8080/actuator/threaddump
+
+
+### beans
+GET http://localhost:8080/actuator/beans
+
+
+### conditions
+GET http://localhost:8080/actuator/conditions
+
+
+### mappings
+GET http://localhost:8080/actuator/mappings
+
+### configprops
+GET http://localhost:8080/actuator/configprops
+
+### env
+GET http://localhost:8080/actuator/env
+
+### flyway
+GET http://localhost:8080/actuator/flyway
+
+### health
+GET http://localhost:8080/actuator/health
+
+
+### shutdown
+POST http://localhost:8080/actuator/shutdown
+
+### httpexchanges
+GET http://localhost:8080/actuator/httpexchanges
+
+
+### info
+GET http://localhost:8080/actuator/info
+
+### loggers
+GET http://localhost:8080/actuator/loggers
+
+
+### loggers/employees
+GET http://localhost:8080/actuator/loggers/employees
+
+
+### loggers/employees
+POST http://localhost:8080/actuator/loggers/employees
+Content-Type: application/json
+
+{
+  "configuredLevel": "info"
+}
+
+
+### logfile
+GET http://localhost:8080/actuator/logfile
+
+
+### metrics
+GET http://localhost:8080/actuator/metrics
+
+### metrics/employees.created
+GET http://localhost:8080/actuator/metrics/employees.created
+
+
+### metrics
+GET http://localhost:8080/actuator/prometheus
+
+
+### auditevents
+GET http://localhost:8080/actuator/auditevents
