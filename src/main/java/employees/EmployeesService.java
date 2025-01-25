@@ -18,6 +18,7 @@ public class EmployeesService {
     private final EmployeeMapper employeeMapper;
     private final EmployeesRepository repository;
     private final AddressesGateway addressesGateway;
+    private final EventStoreGateway eventStoreGateway;
 
      public List<EmployeeDto> listEmployees(QueryParameters queryParameters) {
         return repository.findAll().stream()
@@ -34,6 +35,7 @@ public class EmployeesService {
         employee = repository.save(employee);
         log.info("Employee has been created");
         log.debug("Employee has been created with name {}", employee.getName());
+        eventStoreGateway.sendMesssage(command.getName());
         return employeeMapper.toDto(employee);
     }
 
